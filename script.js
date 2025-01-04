@@ -1,118 +1,72 @@
-const map = document.getElementById('map');
-const viewport = document.getElementById('viewport');
-const character = document.getElementById('character');
-
-const joystick = document.getElementById('joystick');
-const stick = document.getElementById('stick');
-
-let characterX = 1000; // Character's initial position (center of map)
-let characterY = 1000;
-
-let mapX = -1000 + viewport.offsetWidth / 2;
-let mapY = -1000 + viewport.offsetHeight / 2;
-
-const moveSpeed = 5; // Movement speed
-const mapWidth = 2000; // Map width
-const mapHeight = 2000; // Map height
-
-let isDragging = false;
-let direction = { dx: 0, dy: 0 };
-
-// Update map and character positions
-function updatePosition(dx, dy) {
-  characterX += dx;
-  characterY += dy;
-
-  // Constrain character within map boundaries
-  characterX = Math.max(0, Math.min(characterX, mapWidth));
-  characterY = Math.max(0, Math.min(characterY, mapHeight));
-
-  // Update map position
-  mapX = -characterX + viewport.offsetWidth / 2;
-  mapY = -characterY + viewport.offsetHeight / 2;
-
-  // Constrain map within viewport
-  mapX = Math.min(0, Math.max(mapX, viewport.offsetWidth - mapWidth));
-  mapY = Math.min(0, Math.max(mapY, viewport.offsetHeight - mapHeight));
-
-  // Apply transformations
-  map.style.transform = `translate(${mapX}px, ${mapY}px)`;
+/* General styling */
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
-// Continuous movement logic
-function moveCharacter() {
-  if (isDragging && (direction.dx !== 0 || direction.dy !== 0)) {
-    updatePosition(direction.dx * moveSpeed, direction.dy * moveSpeed);
-  }
-  requestAnimationFrame(moveCharacter);
+/* Viewport styling */
+#viewport {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: black;
 }
 
-// Start the movement loop
-moveCharacter();
+/* Map styling */
+#map {
+  position: absolute;
+  width: 2000px; /* Adjust map size */
+  height: 2000px; /* Adjust map size */
+  top: 0;
+  left: 0;
+}
 
-// Joystick functionality
-joystick.addEventListener('mousedown', (e) => {
-  isDragging = true;
-});
+/* Character styling */
+#character {
+  position: absolute;
+  width: 80px; /* Character size */
+  height: 80px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
 
-document.addEventListener('mousemove', (e) => {
-  if (!isDragging) return;
+/* Joystick container styling */
+#joystick-container {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 120px;
+  height: 120px;
+  z-index: 100;
+}
 
-  const rect = joystick.getBoundingClientRect();
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
+/* Joystick base */
+#joystick {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+}
 
-  const dx = e.clientX - centerX;
-  const dy = e.clientY - centerY;
+/* Joystick stick */
+#stick {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  top: 35px;
+  left: 35px;
+  transform: translate(-50%, -50%);
+  transition: background-color 0.3s;
+}
 
-  // Calculate movement direction
-  const magnitude = Math.sqrt(dx * dx + dy * dy);
-  direction.dx = dx / magnitude || 0;
-  direction.dy = dy / magnitude || 0;
-
-  // Update stick position
-  const maxDistance = 50; // Max stick movement radius
-  const distance = Math.min(maxDistance, magnitude);
-  const angle = Math.atan2(dy, dx);
-  stick.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`;
-});
-
-document.addEventListener('mouseup', () => {
-  isDragging = false;
-  direction = { dx: 0, dy: 0 };
-  stick.style.transform = `translate(0px, 0px)`;
-});
-
-// Mobile touch support
-joystick.addEventListener('touchstart', (e) => {
-  isDragging = true;
-});
-
-document.addEventListener('touchmove', (e) => {
-  if (!isDragging) return;
-
-  const touch = e.touches[0];
-  const rect = joystick.getBoundingClientRect();
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-
-  const dx = touch.clientX - centerX;
-  const dy = touch.clientY - centerY;
-
-  // Calculate movement direction
-  const magnitude = Math.sqrt(dx * dx + dy * dy);
-  direction.dx = dx / magnitude || 0;
-  direction.dy = dy / magnitude || 0;
-
-  // Update stick position
-  const maxDistance = 50; // Max stick movement radius
-  const distance = Math.min(maxDistance, magnitude);
-  const angle = Math.atan2(dy, dx);
-  stick.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`;
-});
-
-document.addEventListener('touchend', () => {
-  isDragging = false;
-  direction = { dx: 0, dy: 0 };
-  stick.style.transform = `translate(0px, 0px)`;
-});
+/* Joystick active state */
+#joystick:active #stick {
+  background-color: rgba(255, 0, 0, 0.8);
+}
