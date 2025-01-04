@@ -17,8 +17,8 @@ body {
 /* Map styling */
 #map {
   position: absolute;
-  width: 2000px; /* Adjust map size */
-  height: 2000px; /* Adjust map size */
+  width: 2000px;
+  height: 2000px;
   top: 0;
   left: 0;
 }
@@ -26,7 +26,7 @@ body {
 /* Character styling */
 #character {
   position: absolute;
-  width: 80px; /* Character size */
+  width: 80px;
   height: 80px;
   top: 50%;
   left: 50%;
